@@ -18,31 +18,39 @@
 
 class Calculator {
   constructor(){
-   let result=0;
+   this.result=0;
   }
   add(data){
-    this.result=this.result+data;
+    this.result+=data;
   }
-  substract(data){
+  subtract(data){
     this.result=this.result-data;
   }
   multiply(data){
     this.result*=data;
   }
   divide(data){
+    if(data==0){
+      throw new Error();
+    }
     this.result=this.result/data;
   }
   clear(){
     this.result=0;
   }
   getResult(){
+    // console.log("hi");
     return this.result;
   }
   calculate(exp){
-    return null;
+    exp.replace(`/[^0-9+\-*/()\s]/g`,'');
+    //regex expression
+    let s=[];
 
   }
 }
-
+let obj=new Calculator(0);
+obj.add(5);
+console.log(obj.getResult());
 
 module.exports = Calculator;

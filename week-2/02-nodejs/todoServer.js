@@ -39,11 +39,82 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
-  
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+const express = require("express");
+const bodyParser = require("body-parser");
+
+const app = express();
+
+app.use(bodyParser.json());
+
+class Todo {
+  constructor(id, title, completed, description) {
+    this.id = id;
+    this.title = title;
+    this.completed = completed;
+    this.description = description;
+  }
+}
+const task = [];
+
+app.get("/todos", (req, res) => {
+  const arr = [];
+  for (let i of task) {
+    arr.push(i);
+  }
+  console.log(arr);
+  res.status(200).json(arr);
+});
+app.get("/todos/:id", (req, res) => {
+  let val = false;
+  val = task.filter((element) => {
+    return parseInt(element.id) === parseInt(req.params.id);
+  });
+  console.log(val);
+  if (val.length===0) {
+    res.status(404).send("404 Not found");
+  } else {
+    console.log(val);
+    res.status(200).json(val[0]);
+  }
+});
+app.post("/todos",(req,res)=>{
+  let id= Math.floor(Math.random() * 1000000) // unique random id
+  task.push(new Todo(id,req.body.title,req.body.completed,req.body.description));
+  console.log(task);
+  res.status(201).json(task[task.length-1]);
+})
+app.put("/todos/:id",(req,res)=>{
+  let flag=true;
+  for(let i of task){
+    console.log(i);
+    if(parseInt(i.id)===parseInt(req.params.id)){
+      flag=false;
+      i.title=req.body.title;
+      i.completed=req.body.completed;
+      i.description=req.body.completed;
+    }
+  }
+  if(flag){
+    res.status(404).send("Not found");
+  }else{
+    res.status(200).end();
+  }
+})
+app.delete("/todos/:id",(req,res)=>{
+  console.log(req.params.id);
+  console.log(task);
+  console.log(task.some((element)=>parseInt(element.id)===parseInt(req.params.id)));
+  if(!task.some((element)=>parseInt(element.id)===parseInt(req.params.id))){
+    res.status(404).send("Not found");
+
+  }else{
+    task.splice(task.indexOf((element)=>parseInt(element.id)===parseInt(req.params.id)));
+    res.status(200).end();
+  }
+})
+app.get("*",(req,res)=>{
+  res.status(404).send("Route not found");
+})
+app.listen(4000);
+
+module.exports = app;
